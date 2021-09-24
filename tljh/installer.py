@@ -182,7 +182,7 @@ def ensure_user_environment(user_requirements_txt_file):
         print('/n')
         print('From the web page of miniconda (https://docs.conda.io/en/latest/miniconda.html), enter:')
         miniconda_installer_sha256 = input('- the sha256 of the Latest Miniconda Installer: ')
-        conda_version = input('- the conda version (ex: 4.8.1):')
+        conda_version = input('- the associated conda version (ex: 4.8.1):')
         logger.info('Downloading & setting up user environment...')
         # FIXME: allow using miniforge
         installer_url = "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
