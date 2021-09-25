@@ -164,7 +164,7 @@ def ensure_usergroups():
         f.write('Defaults exempt_group = jupyterhub-admins\n')
 
 
-def ensure_user_environment(user_requirements_txt_file):
+def ensure_user_environment(user_requirements_txt_file,miniconda_refs):
     """
     Set up user conda environment with required packages
     """
@@ -179,10 +179,9 @@ def ensure_user_environment(user_requirements_txt_file):
         conda_version = '4.5.8'
     # If no prior miniconda installation is found, we can install a newer version
     else:
-        print('/n')
-        print('From the web page of miniconda (https://docs.conda.io/en/latest/miniconda.html), enter:')
-        miniconda_installer_sha256 = input('- the sha256 of the Latest Miniconda Installer: ')
-        conda_version = input('- the associated conda version (ex: 4.8.1):')
+        
+        miniconda_installer_sha256,conda_version = [s.strip() for s in miniconda_refs.split('_')]
+        
         logger.info('Downloading & setting up user environment...')
         # FIXME: allow using miniforge
         installer_url = "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"
@@ -408,6 +407,20 @@ def main():
         type=int,
         help='The pid of the progress page server'
     )
+    argparser.add_argument(
+        '--miniconda_installer_sha256',
+        help='The sha256 of the latex linux x86_64 miniconda installer. \n Could be found here: https://docs.conda.io/en/latest/miniconda.html'
+    )    
+    argparser.add_argument(
+        '--miniconda_refs',
+        help='The sha256 of the latest linux x86_64 miniconda installer followed by the conda version separated by an  "_".\n' +\
+             'ex: 8a324adcc9eaf1c09e22a992bb6234d91a94146840ee6b11c114ecadafc68121_4.8.1 \n' +\
+             'These infos could be found here: https://docs.conda.io/en/latest/miniconda.html'
+    )   
+    
+  
+    
+    
 
     args = argparser.parse_args()
 
@@ -416,7 +429,7 @@ def main():
     ensure_config_yaml(pm)
     ensure_admins(args.admin)
     ensure_usergroups()
-    ensure_user_environment(args.user_requirements_txt_url)
+    ensure_user_environment(args.user_requirements_txt_url,args.miniconda_refs)
 
     logger.info("Setting up JupyterHub...")
     ensure_jupyterhub_package(HUB_ENV_PREFIX)
